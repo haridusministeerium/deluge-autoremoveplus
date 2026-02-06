@@ -102,12 +102,10 @@ def _time_last_transfer(i_t):
     (i, t) = i_t
     try:
         # time since last transfer (upload/download) in hours
-        time_since_last_transfer = round(t.get_status(['time_since_transfer'], update=True)['time_since_transfer'] / 3600.0, 4)
+        return round(t.get_status(['time_since_transfer'], update=True)['time_since_transfer'] / 3600.0, 4)
     except Exception as e:
         log.error("Unable to get torrent property: {}".format(e))
-        return False
-
-    return time_since_last_transfer
+        return -1
 
 
 def _age_in_days(i_t):
@@ -167,7 +165,7 @@ filter_funcs = {
     'func_time_since_transfer': _time_last_transfer,
     'func_time_seen_complete': _time_since_seen_complete,
     'func_state': lambda i_t: i_t[1].get_status(['state'], update=True)['state'].lower(),  # [downloading, paused, seeding, error, moving, queued, checking, allocating] (note all lower case!)
-    'func_progress': lambda i_t: i_t[1].get_status(['progress'], update=True)['progress']  # float, 0-100; note it also reports 100 if state = Error; see ~ https://git.deluge-torrent.org/deluge/tree/deluge/core/torrent.py#n972
+    'func_progress': lambda i_t: i_t[1].get_status(['progress'], update=True)['progress']  # float, 0-100; note it also reports 100 if state = Error; see ~ https://git.deluge-torrent.org/deluge/tree/deluge/core/torrent.py#n990
 }
 # other potentially useful statuses:
 # - total_done: (taken  directly from libtorrent); total # of bytes of the files(s) that we have; unsure if or how the value changes when torrent state changes from Downloading to {Seeding,Moving...}
@@ -538,16 +536,15 @@ class Core(CorePluginBase):
             if max_seeds < 0:
                 max_seeds = 0
 
-        # Alternate sort by primary and secondary criteria
+        f0 = _time_last_transfer  # we want to first remove torrents that have been sitting idle for longest
+        # break sorting ties by primary & secondary criteria:
         f1 = filter_funcs.get(self.config['filter'], _get_ratio)
         f2 = filter_funcs.get(self.config['filter2'], _get_ratio)
-        if f1 == f2:
-            sort_f = lambda x: f1(x)
-        else:
-            sort_f = lambda x: (f1(x), f2(x))
+
+        sort_funs = list(dict.fromkeys([f0, f1, f2]))  # filter for unique
 
         torrents.sort(
-            key=sort_f,
+            key=lambda i_t: tuple(f(i_t) for f in sort_funs),
             reverse=False
         )
 
