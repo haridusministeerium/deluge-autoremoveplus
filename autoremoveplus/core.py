@@ -286,13 +286,11 @@ class Core(CorePluginBase):
         if real_free_space is None:
             real_free_space = component.get("Core").get_free_space() / 1073741824.0  # bytes -> GB
 
-        log.debug("Free Space in GB (real/min.required): %s/%s" % (real_free_space, min_hdd_space))
+        log.debug("Free Space in GB (real/min.required): %s / %s" % (real_free_space, min_hdd_space))
 
-        # if hdd space below minimum delete torrents
-        if real_free_space > min_hdd_space:
-            return True  # there is enough space, do not delete torrents
-        else:
-            return False
+        # if hdd space _below_ minimum delete torrents
+        # (returns True if not to delete)
+        return real_free_space > min_hdd_space
 
     def pause_torrent(self, torrent):
         try:
@@ -640,12 +638,13 @@ class Core(CorePluginBase):
                     # note we deferToThread because of time.sleep() downstream
                     if await threads.deferToThread(lambda: self.remove_torrent(i, t, remove_data)):
                         changed = True
-                    # sleep a bit post-removal to give time for hdd space to be freed up;
-                    # on some seedboxes I've seen it takes a long time for space to be
-                    # reported as freed up, which can cause too many torrents to be removed
-                    # in the same invocation:
-                    if self.config['hdd_space'] > 0.0 and self.config['post_removal_sleep_sec'] > 0.0:
-                        await threads.deferToThread(lambda: time.sleep(self.config['post_removal_sleep_sec']))
+
+                        # sleep a bit post-removal to give time for hdd space to be freed up;
+                        # on some seedboxes I've seen it takes a long time for space to be
+                        # reported as freed up, which can cause too many torrents to be removed
+                        # in the same invocation:
+                        if self.config['hdd_space'] > 0.0 and self.config['post_removal_sleep_sec'] > 0.0:
+                            await threads.deferToThread(lambda: time.sleep(self.config['post_removal_sleep_sec']))
 
         # If a torrent exemption state has been removed save changes
         if changed:
