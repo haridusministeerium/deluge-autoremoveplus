@@ -38,6 +38,15 @@
 #    statement from all source files in the program, then also delete it here.
 #
 
+import atexit
+from importlib.resources import files, as_file
+from contextlib import ExitStack
+from functools import lru_cache
+
+_resource_stack = ExitStack()
+atexit.register(_resource_stack.close)
+
+@lru_cache(maxsize=None)
 def get_resource(filename):
-    import pkg_resources, os
-    return pkg_resources.resource_filename("autoremoveplus", os.path.join("data", filename))
+    ref = files("autoremoveplus").joinpath("data", filename)
+    return str(_resource_stack.enter_context(as_file(ref)))

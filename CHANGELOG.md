@@ -1,7 +1,7 @@
 ## 0.6.9 (unreleased)
 
-
-- Nothing changed yet.
+- migrate CI from drone to GH actions
+- replace pkg_resources w/ importlib.resources
 
 
 ## 0.6.8 (2024-12-20)

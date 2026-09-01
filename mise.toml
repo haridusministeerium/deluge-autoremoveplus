@@ -1,0 +1,10 @@
+#[tools]
+#python = "3.11" # [optional] will be used for the venv
+
+[env]
+#_.python.venv = { path = ".venv", create = true, python = "3.10" } # use a specific python version
+#_.python.venv = { path = ".venv", create = true }
+_.python.venv = { path = ".venv", create = true, uv_create_args = ['--seed'] }
+
+# Use the project name derived from the current directory
+PROJECT_NAME = "{{ config_root | basename }}"

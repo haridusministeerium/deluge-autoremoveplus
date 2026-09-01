@@ -10,7 +10,7 @@ Other forks from v1 that support Deluge v2:
 - https://github.com/tote94/deluge-autoremoveplus - think this is only webui (actually not sure); [this](https://github.com/springjools/deluge-autoremoveplus/issues/36#issuecomment-830783002) refers
 it's _not_ springjools that has the working GTKui prefs page;
 
-For Deluge v1 support, see [deluge-1 branch](https://github.com/laur89/deluge-autoremoveplus/tree/deluge-1)
+For Deluge v1 support, see [deluge-1 branch](https://github.com/haridusministeerium/deluge-autoremoveplus/tree/deluge-1)
 
 This is a GtkUI and WebUI plugin.
 
