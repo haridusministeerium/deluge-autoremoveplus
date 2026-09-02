@@ -1,3 +1,9 @@
+0.6.10 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 0.6.9 (2026-09-02)
 
 - migrate CI from drone to GH actions

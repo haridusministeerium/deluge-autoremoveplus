@@ -46,7 +46,7 @@ import os
 import glob
 
 # note the version is managed by zest.releaser:
-version = "0.6.9"
+version = "0.6.10.dev0"
 
 __plugin_name__ = "AutoRemovePlus"
 __author__ = "Laur"
