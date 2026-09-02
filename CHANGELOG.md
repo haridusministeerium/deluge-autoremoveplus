@@ -1,4 +1,4 @@
-## 0.6.9 (unreleased)
+0.6.9 (2026-09-02)
 
 - migrate CI from drone to GH actions
 - replace pkg_resources w/ importlib.resources
